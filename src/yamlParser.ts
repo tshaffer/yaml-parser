@@ -23,11 +23,6 @@ export function parseYaml() {
   console.log(bmapYamlData.Enums[0].Options[0].Name);
   console.log(bmapYamlData.Enums[0].Options[0]);
 
-  // console.log('invoke getFBlocks');
-  // FBlockList = getFBlocks();
-  // console.log('display FBlockList');
-  // console.log(FBlockList);
-
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     functionBlock.bmapFunctions = [];
     functionBlocks.push(functionBlock);
@@ -36,7 +31,12 @@ export function parseYaml() {
 
   console.log(functionBlocks);
 
-  const bmapJson: string = JSON.stringify(functionBlocks, null, 2);
+  const bmap: any = {};
+  bmap.Name = 'BMAP';
+  bmap.Version = '0.0.1';
+  bmap.Type = 'BMAP';
+  bmap.functionBlocks = functionBlocks;
+  const bmapJson: string = JSON.stringify(bmap, null, 2);
   fs.writeFileSync('bmap.json', bmapJson);
 }
 

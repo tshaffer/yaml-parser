@@ -2,10 +2,12 @@ import * as fs from 'fs-extra';
 import { safeLoad } from 'js-yaml';
 
 import {
-  FunctionBlock
+  BmapFunction,
+  BmapFunctionBlock
 } from './types';
+import { isArray, isObject } from 'lodash';
 
-const functionBlocks: FunctionBlock[] = [];
+const functionBlocks: BmapFunctionBlock[] = [];
 
 export function parseYaml() {
   console.log('parseYaml invoked in typescript file');
@@ -27,8 +29,25 @@ export function parseYaml() {
   // console.log(FBlockList);
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
-    functionBlocks.push(functionBlock);   
+    functionBlock.bmapFunctions = [];
+    functionBlocks.push(functionBlock);
+    getFunctions(functionBlock);
   }
 
   console.log(functionBlocks);
+}
+
+function getFunctions(functionBlock: BmapFunctionBlock) {
+  const path = './BMAP_YAML/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
+  console.log(path);
+
+  const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
+  console.log(functionYamlData);
+
+  if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
+    const functionsYaml = functionYamlData.Enums[0].Options;
+    for (const bmapFunction of functionsYaml) {
+      functionBlock.bmapFunctions.push(bmapFunction as BmapFunction);
+    }
+  }
 }

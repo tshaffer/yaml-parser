@@ -47,7 +47,29 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
     const functionsYaml = functionYamlData.Enums[0].Options;
     for (const bmapFunction of functionsYaml) {
+      bmapFunction.bmapOperators = [];
       functionBlock.bmapFunctions.push(bmapFunction as BmapFunction);
+      getOperators(functionBlock, bmapFunction);
     }
   }
+}
+
+function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
+
+  const path = './BMAP_YAML/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
+  console.log(path);
+
+  try {
+    const operatorYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
+    console.log(operatorYamlData);
+    if (isObject(operatorYamlData) && isObject(operatorYamlData.Messages)) {
+      const bmapOperators: any[] = operatorYamlData.Messages;
+      for (const bmapOperator of bmapOperators) {
+        bmapFunction.bmapOperators.push(bmapOperator);
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
 }

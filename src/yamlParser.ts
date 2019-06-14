@@ -35,6 +35,9 @@ export function parseYaml() {
   }
 
   console.log(functionBlocks);
+
+  const bmapJson: string = JSON.stringify(functionBlocks, null, 2);
+  fs.writeFileSync('bmap.json', bmapJson);
 }
 
 function getFunctions(functionBlock: BmapFunctionBlock) {

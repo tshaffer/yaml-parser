@@ -24,7 +24,7 @@ export function parseYaml() {
   console.log(bmapYamlData.Enums[0].Options[0]);
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
-    functionBlock.bmapFunctions = [];
+    functionBlock.Functions = [];
     functionBlocks.push(functionBlock);
     getFunctions(functionBlock);
   }
@@ -35,7 +35,7 @@ export function parseYaml() {
   bmap.Name = 'BMAP';
   bmap.Version = '0.0.1';
   bmap.Type = 'BMAP';
-  bmap.functionBlocks = functionBlocks;
+  bmap.FunctionBlocks = functionBlocks;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
   fs.writeFileSync('bmap.json', bmapJson);
 }
@@ -50,8 +50,8 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
     const functionsYaml = functionYamlData.Enums[0].Options;
     for (const bmapFunction of functionsYaml) {
-      bmapFunction.bmapOperators = [];
-      functionBlock.bmapFunctions.push(bmapFunction as BmapFunction);
+      bmapFunction.Operators = [];
+      functionBlock.Functions.push(bmapFunction as BmapFunction);
       getOperators(functionBlock, bmapFunction);
     }
   }
@@ -68,11 +68,10 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
     if (isObject(operatorYamlData) && isObject(operatorYamlData.Messages)) {
       const bmapOperators: any[] = operatorYamlData.Messages;
       for (const bmapOperator of bmapOperators) {
-        bmapFunction.bmapOperators.push(bmapOperator);
+        bmapFunction.Operators.push(bmapOperator);
       }
     }
   } catch (e) {
     console.log(e);
   }
-
 }

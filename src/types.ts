@@ -5,7 +5,7 @@ export interface BmapFunctionBlock {
   Description: string;
   Mandatory: string;
   Version: string;
-  bmapFunctions: BmapFunction[];
+  Functions: BmapFunction[];
 }
 
 export interface BmapFunction {
@@ -14,7 +14,7 @@ export interface BmapFunction {
   Mandatory: string;
   Name: string;
   Value: number;
-  bmapOperators: BmapOperator[];
+  Operators: BmapOperator[];
 }
 
 export interface BmapOperator {

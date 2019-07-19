@@ -13,9 +13,10 @@ let bmapOutputDirectory: string;
 let bmapIncludesSpecPath: string;
 
 export function parseYaml(
-  yaml_input_directory: string, 
+  yaml_input_directory: string,
   bmap_output_directory: string,
   bmap_includes_spec_path: string) {
+
   console.log('parseYaml invoked in typescript file');
 
   yamlInputDirectory = yaml_input_directory;
@@ -36,9 +37,13 @@ export function parseYaml(
   console.log(bmapYamlData.Enums[0].Options[0]);
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
-    functionBlock.Functions = [];
-    functionBlocks.push(functionBlock);
-    getFunctions(functionBlock);
+    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
+      functionBlock.Functions = [];
+      getFunctions(functionBlock);
+      if (functionBlock.Functions.length > 0) {
+        functionBlocks.push(functionBlock);
+      }
+    }
   }
 
   console.log(functionBlocks);

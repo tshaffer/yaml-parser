@@ -22,7 +22,7 @@ export function parseYaml(
   bmapOutputDirectory = bmap_output_directory;
   bmapIncludesSpecPath = bmap_includes_spec_path;
 
-  parseBmapIncludesSpec();
+  const includesSpec: any = parseBmapIncludesSpec();
 
   const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/BMAP.yaml', 'utf8'));
   console.log(bmapYamlData);
@@ -57,20 +57,16 @@ function parseBmapIncludesSpec(): any {
   const bmapIncludesSpec: any = JSON.parse(bmapIncludesSpecStr);
 
   const includesSpec: any = {};
-  includesSpec.functionBlocks = [];
+  includesSpec.functionBlocks = {};
 
   for (const bmapFunctionBlock of bmapIncludesSpec.FunctionBlocks) {
     const functionBlock: any = {};
     functionBlock.name = bmapFunctionBlock.Name;
-    functionBlock.functions = [];
+    functionBlock.functions = {};
     for (const bmapFunction of bmapFunctionBlock.Functions) {
-      functionBlock.functions.push(
-        {
-          name: bmapFunction.Name
-        }
-      );
+      functionBlock.functions[bmapFunction.Name] = bmapFunction;
     }
-    includesSpec.functionBlocks.push(functionBlock);
+    includesSpec.functionBlocks[bmapFunctionBlock.Name] = functionBlock;
   }
 
   return includesSpec;

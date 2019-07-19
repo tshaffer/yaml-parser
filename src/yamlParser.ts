@@ -8,9 +8,14 @@ import {
 import { isArray, isObject } from 'lodash';
 
 const functionBlocks: BmapFunctionBlock[] = [];
+let yamlInputDirectory: string;
+let bmapOutputDirectory: string;
 
-export function parseYaml() {
+export function parseYaml(yaml_input_directory: string, bmap_output_directory: string) {
   console.log('parseYaml invoked in typescript file');
+
+  yamlInputDirectory = yaml_input_directory;
+  bmapOutputDirectory = bmap_output_directory;
 
   const bmapYamlData: any = safeLoad(fs.readFileSync('../BMAP_Yaml/BMAP.yaml', 'utf8'));
   console.log(bmapYamlData);
@@ -37,11 +42,11 @@ export function parseYaml() {
   bmap.Type = 'BMAP';
   bmap.FunctionBlocks = functionBlocks;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
-  fs.writeFileSync('../generated-bmap/bmap.json', bmapJson);
+  fs.writeFileSync(bmapOutputDirectory + '/bmap.json', bmapJson);
 }
 
 function getFunctions(functionBlock: BmapFunctionBlock) {
-  const path = '../BMAP_YAML/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
+  const path = yamlInputDirectory + '/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
   console.log(path);
 
   const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
@@ -59,7 +64,7 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
 
 function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
 
-  const path = '../BMAP_YAML/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
+  const path = yamlInputDirectory + '/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
   console.log(path);
 
   try {

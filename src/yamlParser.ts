@@ -12,7 +12,7 @@ const functionBlocks: BmapFunctionBlock[] = [];
 export function parseYaml() {
   console.log('parseYaml invoked in typescript file');
 
-  const bmapYamlData: any = safeLoad(fs.readFileSync('BMAP.yaml', 'utf8'));
+  const bmapYamlData: any = safeLoad(fs.readFileSync('../BMAP_Yaml/BMAP.yaml', 'utf8'));
   console.log(bmapYamlData);
 
   const FBlocksYaml = bmapYamlData.Enums[0].Options;
@@ -37,11 +37,11 @@ export function parseYaml() {
   bmap.Type = 'BMAP';
   bmap.FunctionBlocks = functionBlocks;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
-  fs.writeFileSync('bmap.json', bmapJson);
+  fs.writeFileSync('../generated-bmap/bmap.json', bmapJson);
 }
 
 function getFunctions(functionBlock: BmapFunctionBlock) {
-  const path = './BMAP_YAML/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
+  const path = '../BMAP_YAML/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
   console.log(path);
 
   const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
@@ -59,7 +59,7 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
 
 function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
 
-  const path = './BMAP_YAML/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
+  const path = '../BMAP_YAML/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
   console.log(path);
 
   try {

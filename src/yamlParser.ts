@@ -10,14 +10,19 @@ import { isArray, isObject } from 'lodash';
 const functionBlocks: BmapFunctionBlock[] = [];
 let yamlInputDirectory: string;
 let bmapOutputDirectory: string;
+let bmapIncludesSpecPath: string;
 
-export function parseYaml(yaml_input_directory: string, bmap_output_directory: string) {
+export function parseYaml(
+  yaml_input_directory: string, 
+  bmap_output_directory: string,
+  bmap_includes_spec_path: string) {
   console.log('parseYaml invoked in typescript file');
 
   yamlInputDirectory = yaml_input_directory;
   bmapOutputDirectory = bmap_output_directory;
+  bmapIncludesSpecPath = bmap_includes_spec_path;
 
-  const bmapYamlData: any = safeLoad(fs.readFileSync('../BMAP_Yaml/BMAP.yaml', 'utf8'));
+  const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/BMAP.yaml', 'utf8'));
   console.log(bmapYamlData);
 
   const FBlocksYaml = bmapYamlData.Enums[0].Options;

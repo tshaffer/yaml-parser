@@ -12,7 +12,11 @@ module.exports = function (args) {
   if (args._[0] === 'parseYaml') {
     console.log('bin/parse.js invoked');
 
-    parseYaml(args.yamlInputDirectory, args.bmapOutputDirectory);
+    parseYaml(
+      args.yamlInputDirectory, 
+      args.bmapOutputDirectory,
+      args.bmapIncludesSpecPath
+      );
   }
 
 }

@@ -25,16 +25,8 @@ export function parseYaml(
 
   const includesSpec: any = parseBmapIncludesSpec();
 
-  const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/BMAP.yaml', 'utf8'));
-  console.log(bmapYamlData);
-
-  const FBlocksYaml = bmapYamlData.Enums[0].Options;
-  console.log('FBlocksYaml');
-  console.log(FBlocksYaml);
-
-  console.log('ProductInfo function block');
-  console.log(bmapYamlData.Enums[0].Options[0].Name);
-  console.log(bmapYamlData.Enums[0].Options[0]);
+  // const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/BMAP.yaml', 'utf8'));
+  const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/headers/BMAP.yaml', 'utf8'));
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
@@ -45,8 +37,6 @@ export function parseYaml(
       }
     }
   }
-
-  console.log(functionBlocks);
 
   const bmap: any = {};
   bmap.Name = 'BMAP';
@@ -78,11 +68,9 @@ function parseBmapIncludesSpec(): any {
 }
 
 function getFunctions(functionBlock: BmapFunctionBlock) {
-  const path = yamlInputDirectory + '/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
-  console.log(path);
 
+  const path = yamlInputDirectory + '/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
   const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
-  console.log(functionYamlData);
 
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
     const functionsYaml = functionYamlData.Enums[0].Options;
@@ -97,11 +85,9 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
 function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
 
   const path = yamlInputDirectory + '/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
-  console.log(path);
 
   try {
     const operatorYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
-    console.log(operatorYamlData);
     if (isObject(operatorYamlData) && isObject(operatorYamlData.Messages)) {
       const bmapOperators: any[] = operatorYamlData.Messages;
       for (const bmapOperator of bmapOperators) {

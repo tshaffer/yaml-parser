@@ -1,0 +1,31 @@
+{
+  "Name": "BMAP",
+  "FunctionBlocks": [
+    {
+      "Name": "ProductInfo",
+      "Functions": [
+        {
+          "Name": "FBlockInfo",
+          "Include": true
+        },
+        {
+          "Name": "BMAPVersion",
+          "Include": false
+        },
+        {
+          "Name": "SerialNumber",
+          "Include": true
+        }
+      ]
+    },
+    {
+      "Name": "Settings",
+      "Functions": [
+        {
+          "Name": "FBlockInfo",
+          "Include": true
+        }
+      ]
+    }
+  ]
+}

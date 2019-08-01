@@ -6,6 +6,19 @@ export interface BmapFunctionBlock {
   Mandatory: string;
   Version: string;
   Functions: BmapFunction[];
+  Enums: BmapEnum[];
+}
+
+export interface BmapEnum {
+  Name: string;
+  Description: string;
+  Options: BmapEnumOption[];
+}
+
+export interface BmapEnumOption {
+  Name: string;
+  Description: string;
+  Value: number;
 }
 
 export interface BmapFunction {

@@ -27,7 +27,6 @@ export function parseYaml(
 
   const includesSpec: any = parseBmapIncludesSpec();
 
-  // const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/BMAP.yaml', 'utf8'));
   const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/headers/BMAP.yaml', 'utf8'));
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
@@ -41,11 +40,40 @@ export function parseYaml(
     }
   }
 
+  // Top level enums
+  let topLevelBmapEnums: BmapEnum[] = [];
+
+  for (let i = 1; i < bmapYamlData.Enums.length; i++) {
+    const enumDefinition = bmapYamlData.Enums[i];
+    const enumName = enumDefinition.Name;
+    const enumDescription = enumDefinition.Description;
+    const enumOptions = enumDefinition.Options;
+
+    const bmapEnumOptions: BmapEnumOption[] = [];
+
+    for (const enumOption of enumOptions) {
+      const bmapEnumOption: BmapEnumOption = {
+        Name: enumOption.Name,
+        Description: enumOption.Description,
+        Value: enumOption.Value,
+      };
+      bmapEnumOptions.push(bmapEnumOption);
+    }
+
+    const bmapEnum: BmapEnum = {
+      Name: enumName,
+      Description: enumDescription,
+      Options: bmapEnumOptions
+    };
+    topLevelBmapEnums.push(bmapEnum);
+}
+
   const bmap: any = {};
   bmap.Name = 'BMAP';
   bmap.Version = '0.0.1';
   bmap.Type = 'BMAP';
   bmap.FunctionBlocks = functionBlocks;
+  bmap.Enums = topLevelBmapEnums;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
   fs.writeFileSync(bmapOutputDirectory + '/bmap.json', bmapJson);
 }
@@ -115,24 +143,6 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
       };
       functionBlock.Enums.push(bmapEnum);
     }
-    // const numEnumDefinitions = functionYamlData.Enums.length - 1;
-    // for (let i = 0; i < numEnumDefinitions; i++) {
-
-    // }
-    // if (functionYamlData.Enums.length > 1 && isArray(functionYamlData.Enums[1].Options)) {
-    //   console.log('Enum: ' + functionYamlData.Enums[1].Name);
-    //   console.log('Count: ' + functionYamlData.Enums[1].Options.length);
-    //   functionBlock.EnumName = functionYamlData.Enums[1].Name;
-    //   functionBlock.Enums = [];
-    //   for (const bmapEnum of functionYamlData.Enums[1].Options) {
-    //     const optionsEnum: BmapEnum = {
-    //       Name: bmapEnum.Name,
-    //       Value: bmapEnum.Value,
-    //       Description: bmapEnum.Description,
-    //     };
-    //     functionBlock.Enums.push(optionsEnum);
-    //   }
-    // }
   }
 }
 

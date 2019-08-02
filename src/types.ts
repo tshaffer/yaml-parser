@@ -28,6 +28,7 @@ export interface BmapFunction {
   Name: string;
   Value: number;
   Operators: BmapOperator[];
+  Enums: BmapEnum[];
 }
 
 export interface BmapOperator {

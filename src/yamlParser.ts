@@ -66,7 +66,7 @@ export function parseYaml(
       Options: bmapEnumOptions
     };
     topLevelBmapEnums.push(bmapEnum);
-}
+  }
 
   const bmap: any = {};
   bmap.Name = 'BMAP';
@@ -106,6 +106,10 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
   const path = yamlInputDirectory + '/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
   console.log('path: ' + path);
   const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
+
+  if (functionBlock.Name === 'Experimental') {
+    console.log('found it');
+  }
 
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
 
@@ -149,14 +153,50 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
 function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
 
   const path = yamlInputDirectory + '/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
+  console.log(path);
+
+  if (bmapFunction.Name == 'GestureRecognition') {
+    console.log('found');
+  }
+  if (bmapFunction.Name === 'OneRecord') {
+    console.log('onerecord');
+  }
 
   try {
-    // console.log('safeLoad directory: ' + path);
+    console.log('safeLoad directory: ' + path);
     const operatorYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
     if (isObject(operatorYamlData) && isObject(operatorYamlData.Messages)) {
       const bmapOperators: any[] = operatorYamlData.Messages;
       for (const bmapOperator of bmapOperators) {
         bmapFunction.Operators.push(bmapOperator);
+      }
+    }
+
+    bmapFunction.Enums = [];
+    if (isObject(operatorYamlData) && isArray(operatorYamlData.Enums)) {
+      for (const enumDefinition of operatorYamlData.Enums) {
+        const enumName = enumDefinition.Name;
+        const enumDescription = enumDefinition.Description;
+        const enumOptions = enumDefinition.Options;
+
+        const bmapEnumOptions: BmapEnumOption[] = [];
+
+        for (const enumOption of enumOptions) {
+          const bmapEnumOption: BmapEnumOption = {
+            Name: enumOption.Name,
+            Description: enumOption.Description,
+            Value: enumOption.Value,
+          };
+          bmapEnumOptions.push(bmapEnumOption);
+        }
+
+        const bmapEnum: BmapEnum = {
+          Name: enumName,
+          Description: enumDescription,
+          Options: bmapEnumOptions
+        };
+
+        bmapFunction.Enums.push(bmapEnum);
       }
     }
   } catch (e) {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # example invocation
-#./generateBMAP.sh /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/Yaml-1.1.0-1324+57605d1 /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/yaml-parser /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/generated-bmap /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json
+#./generateBMAP.sh /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/Yaml-1.1.0-1500+4e3210e /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/yaml-parser /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/generated-bmap /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json
 
 echo "Path to the BMAP yaml root directory"
 echo $1
@@ -24,5 +24,5 @@ find . -type f | xargs sed -i '' 's/!include/#####/g'
 find . -type f | xargs sed -i '' 's/!File/#####/g'
 
 cd $2
-node ./bin/cli.js parseYaml --yamlInputDirectory=$1 --bmapOutputDirectory=$4 --bmapIncludesSpecPath=$5
+node ./bin/cli.js parseYaml --yamlInputDirectory=$1 --bmapOutputDirectory=$4 --bmapIncludesSpecPath=$3
 #./generateBMAP.sh /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/Yaml-1.1.0-1324+57605d1 /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/yaml-parser /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/generated-bmap /Users/tedshaffer/Documents/Miscellaneous/Bose/BMAP/bmapGenerator/bmapIncludesSpec.json

@@ -2,14 +2,24 @@ import * as fs from 'fs-extra';
 import { safeLoad } from 'js-yaml';
 
 import {
+  BsBmapEnum,
+  BsBmapFunction,
+  BsBmapFunctionBlock,
+  BsBmapEnumOption,
+  YamlBmapEnum,
+  YamlBmapFunction,
+  YamlBmapFunctionBlock,
+  YamlBmapEnumOption,
   BmapEnum,
   BmapFunction,
   BmapFunctionBlock,
-  BmapEnumOption
+  BmapEnumOption,
 } from './types';
 import { isArray, isObject } from 'lodash';
 
-const functionBlocks: BmapFunctionBlock[] = [];
+const functionBlocks: YamlBmapFunctionBlock[] = [];
+const bsFunctionBlocks: BsBmapFunctionBlock[] = [];
+
 let yamlInputDirectory: string;
 let bmapOutputDirectory: string;
 let bmapIncludesSpecPath: string;
@@ -28,6 +38,26 @@ export function parseYaml(
   const includesSpec: any = parseBmapIncludesSpec();
 
   const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/headers/BMAP.yaml', 'utf8'));
+
+  for (const functionBlock of bmapYamlData.Enums[0].Options) {
+    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
+      const bsFunctionBlock: BsBmapFunctionBlock = objectKeysToLowerCase(functionBlock);
+      bsFunctionBlocks.push(bsFunctionBlock);
+    }
+  }
+
+  debugger;
+
+  for (const functionBlock of bmapYamlData.Enums[0].Options) {
+    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
+      functionBlock.Functions = [];
+      functionBlock.Enums = [];
+      getFunctions(functionBlock);
+      if (functionBlock.Functions.length > 0) {
+        functionBlocks.push(functionBlock);
+      }
+    }
+  }
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
@@ -118,7 +148,7 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
     console.log('function count: ' + functionsYaml.length);
     for (const bmapFunction of functionsYaml) {
       bmapFunction.Operators = [];
-      functionBlock.Functions.push(bmapFunction as BmapFunction);
+      functionBlock.Functions.push(bmapFunction as BsBmapFunction);
       getOperators(functionBlock, bmapFunction);
     }
 
@@ -129,7 +159,7 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
       const enumDescription = enumDefinition.Description;
       const enumOptions = enumDefinition.Options;
 
-      const bmapEnumOptions: BmapEnumOption[] = [];
+      const bmapEnumOptions: BsBmapEnumOption[] = [];
 
       for (const enumOption of enumOptions) {
         const bmapEnumOption: BmapEnumOption = {
@@ -137,13 +167,13 @@ function getFunctions(functionBlock: BmapFunctionBlock) {
           Description: enumOption.Description,
           Value: enumOption.Value,
         };
-        bmapEnumOptions.push(bmapEnumOption);
+        // bmapEnumOptions.push(bmapEnumOption);
       }
 
-      const bmapEnum: BmapEnum = {
-        Name: enumName,
-        Description: enumDescription,
-        Options: bmapEnumOptions
+      const bmapEnum: BsBmapEnum = {
+        name: enumName,
+        description: enumDescription,
+        options: bmapEnumOptions
       };
       functionBlock.Enums.push(bmapEnum);
     }
@@ -203,3 +233,13 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
     console.log(e);
   }
 }
+
+const objectKeysToLowerCase = (origObj: any) => {
+  return Object.keys(origObj).reduce((newObj: any, key: string) => {
+    const val = origObj[key];
+    const newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
+    const newKey: string = key.charAt(0).toLowerCase() + key.substring(1);
+    newObj[newKey] = newVal;
+    return newObj;
+  }, {});
+};

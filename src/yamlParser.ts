@@ -33,6 +33,8 @@ export function parseYaml(
 
   // console.log('parseYaml invoked in typescript file');
 
+  debugger;
+  
   yamlInputDirectory = yaml_input_directory;
   bmapOutputDirectory = bmap_output_directory;
   bmapIncludesSpecPath = bmap_includes_spec_path;
@@ -57,30 +59,8 @@ export function parseYaml(
     }
   }
 
-  for (const functionBlock of bmapYamlData.Enums[0].Options) {
-    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
-      functionBlock.Functions = [];
-      functionBlock.Enums = [];
-      getFunctions(functionBlock);
-      if (functionBlock.Functions.length > 0) {
-        functionBlocks.push(functionBlock);
-      }
-    }
-  }
-
-  for (const functionBlock of bmapYamlData.Enums[0].Options) {
-    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
-      functionBlock.Functions = [];
-      functionBlock.Enums = [];
-      getFunctions(functionBlock);
-      if (functionBlock.Functions.length > 0) {
-        functionBlocks.push(functionBlock);
-      }
-    }
-  }
-
   // Top level enums
-  let topLevelBmapEnums: BmapEnum[] = [];
+  const topLevelBmapEnums: BmapEnum[] = [];
 
   for (let i = 1; i < bmapYamlData.Enums.length; i++) {
     const enumDefinition = bmapYamlData.Enums[i];
@@ -162,31 +142,31 @@ function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
       getOperators(bsFunctionBlock, bsBmapFunction);
     }
 
-    // // Remaining entries in the Enums array are the actual enums
-    // for (let i = 1; i < functionYamlData.Enums.length; i++) {
-    //   const enumDefinition = functionYamlData.Enums[i];
-    //   const enumName = enumDefinition.Name;
-    //   const enumDescription = enumDefinition.Description;
-    //   const enumOptions = enumDefinition.Options;
+    // Remaining entries in the Enums array are the actual enums
+    for (let i = 1; i < functionYamlData.Enums.length; i++) {
+      const enumDefinition = functionYamlData.Enums[i];
+      const enumName = enumDefinition.Name;
+      const enumDescription = enumDefinition.Description;
+      const enumOptions = enumDefinition.Options;
 
-    //   const bmapEnumOptions: BsBmapEnumOption[] = [];
+      const bsBmapEnumOptions: BsBmapEnumOption[] = [];
 
-    //   for (const enumOption of enumOptions) {
-    //     const bmapEnumOption: BmapEnumOption = {
-    //       Name: enumOption.Name,
-    //       Description: enumOption.Description,
-    //       Value: enumOption.Value,
-    //     };
-    //     // bmapEnumOptions.push(bmapEnumOption);
-    //   }
+      for (const enumOption of enumOptions) {
+        const bsBmapEnumOption: BsBmapEnumOption = {
+          name: enumOption.Name,
+          description: enumOption.Description,
+          value: enumOption.Value,
+        };
+        bsBmapEnumOptions.push(bsBmapEnumOption);
+      }
 
-    //   const bmapEnum: BsBmapEnum = {
-    //     name: enumName,
-    //     description: enumDescription,
-    //     options: bmapEnumOptions
-    //   };
-    //   bsFunctionBlock.Enums.push(bmapEnum);
-    // }
+      const bsBmapEnum: BsBmapEnum = {
+        name: enumName,
+        description: enumDescription,
+        options: bsBmapEnumOptions
+      };
+      bsFunctionBlock.enums.push(bsBmapEnum);
+    }
   }
 }
 
@@ -215,29 +195,30 @@ function getOperators(bsBmapFunctionBlock: BsBmapFunctionBlock, bsBmapFunction: 
 
     bsBmapFunction.enums = [];
     if (isObject(operatorYamlData) && isArray(operatorYamlData.Enums)) {
+      debugger;
       for (const enumDefinition of operatorYamlData.Enums) {
         const enumName = enumDefinition.Name;
         const enumDescription = enumDefinition.Description;
         const enumOptions = enumDefinition.Options;
 
-        const bmapEnumOptions: BmapEnumOption[] = [];
+        const bsBmapEnumOptions: BsBmapEnumOption[] = [];
 
         for (const enumOption of enumOptions) {
-          const bmapEnumOption: BmapEnumOption = {
-            Name: enumOption.Name,
-            Description: enumOption.Description,
-            Value: enumOption.Value,
+          const bmapEnumOption: BsBmapEnumOption = {
+            name: enumOption.Name,
+            description: enumOption.Description,
+            value: enumOption.Value,
           };
-          bmapEnumOptions.push(bmapEnumOption);
+          bsBmapEnumOptions.push(bmapEnumOption);
         }
 
-        const bmapEnum: BmapEnum = {
-          Name: enumName,
-          Description: enumDescription,
-          Options: bmapEnumOptions
+        const bmapEnum: BsBmapEnum = {
+          name: enumName,
+          description: enumDescription,
+          options: bsBmapEnumOptions
         };
 
-        // bmapFunction.enums.push(bmapEnum);
+        bsBmapFunction.enums.push(bmapEnum);
       }
     }
   } catch (e) {
@@ -251,7 +232,7 @@ const objectKeysToLowerCase = (origObj: any) => {
     let newVal: any;
     if (isArray(val) && val.length === 0) {
       newVal = [];
-    // use isNil??
+      // use isNil??
     } else if (val !== null && val !== undefined) {
       newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
     }

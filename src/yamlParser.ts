@@ -54,7 +54,9 @@ export function parseYaml(
   }
 
   // Top level enums
-  const topLevelBmapEnums: BmapEnum[] = [];
+  const topLevelBmapEnums: BsBmapEnum[] = [];
+
+  debugger;
 
   for (let i = 1; i < bmapYamlData.Enums.length; i++) {
     const enumDefinition = bmapYamlData.Enums[i];
@@ -62,21 +64,21 @@ export function parseYaml(
     const enumDescription = enumDefinition.Description;
     const enumOptions = enumDefinition.Options;
 
-    const bmapEnumOptions: BmapEnumOption[] = [];
+    const bsBmapEnumOptions: BsBmapEnumOption[] = [];
 
     for (const enumOption of enumOptions) {
-      const bmapEnumOption: BmapEnumOption = {
-        Name: enumOption.Name,
-        Description: enumOption.Description,
-        Value: enumOption.Value,
+      const bmapEnumOption: BsBmapEnumOption = {
+        name: enumOption.Name,
+        description: enumOption.Description,
+        value: enumOption.Value,
       };
-      bmapEnumOptions.push(bmapEnumOption);
+      bsBmapEnumOptions.push(bmapEnumOption);
     }
 
-    const bmapEnum: BmapEnum = {
-      Name: enumName,
-      Description: enumDescription,
-      Options: bmapEnumOptions
+    const bmapEnum: BsBmapEnum = {
+      name: enumName,
+      description: enumDescription,
+      options: bsBmapEnumOptions
     };
     topLevelBmapEnums.push(bmapEnum);
   }

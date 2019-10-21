@@ -34,7 +34,7 @@ export function parseYaml(
   // console.log('parseYaml invoked in typescript file');
 
   debugger;
-  
+
   yamlInputDirectory = yaml_input_directory;
   bmapOutputDirectory = bmap_output_directory;
   bmapIncludesSpecPath = bmap_includes_spec_path;
@@ -46,15 +46,9 @@ export function parseYaml(
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
       const bsFunctionBlock: BsBmapFunctionBlock = objectKeysToLowerCase(functionBlock);
-      bsFunctionBlocks.push(bsFunctionBlock);
-    }
-  }
-
-  for (const bsFunctionBlock of bsFunctionBlocks) {
-    bsFunctionBlock.functions = [];
-    bsFunctionBlock.enums = [];
-    getFunctions(bsFunctionBlock);
-    if (bsFunctionBlock.functions.length > 0) {
+      bsFunctionBlock.functions = [];
+      bsFunctionBlock.enums = [];
+      getFunctions(bsFunctionBlock);
       bsFunctionBlocks.push(bsFunctionBlock);
     }
   }
@@ -91,7 +85,7 @@ export function parseYaml(
   bmap.name = 'BMAP';
   bmap.version = '0.0.1';
   bmap.type = 'BMAP';
-  bmap.functionBlocks = functionBlocks;
+  bmap.functionBlocks = bsFunctionBlocks;
   bmap.enums = topLevelBmapEnums;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
   fs.writeFileSync(bmapOutputDirectory + '/bmap.json', bmapJson);

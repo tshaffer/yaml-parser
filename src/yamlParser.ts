@@ -17,7 +17,7 @@ import {
   YamlBmapOperator,
   BsBmapOperator,
 } from './types';
-import { isArray, isObject } from 'lodash';
+import { isArray, isNil, isObject } from 'lodash';
 
 const functionBlocks: YamlBmapFunctionBlock[] = [];
 const bsFunctionBlocks: BsBmapFunctionBlock[] = [];
@@ -55,8 +55,6 @@ export function parseYaml(
 
   // Top level enums
   const topLevelBmapEnums: BsBmapEnum[] = [];
-
-  debugger;
 
   for (let i = 1; i < bmapYamlData.Enums.length; i++) {
     const enumDefinition = bmapYamlData.Enums[i];
@@ -228,7 +226,8 @@ const objectKeysToLowerCase = (origObj: any) => {
     let newVal: any;
     if (isArray(val) && val.length === 0) {
       newVal = [];
-      // use isNil??
+    } else if (isNil(val)) {
+      newVal = null;
     } else if (val !== null && val !== undefined) {
       newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
     }

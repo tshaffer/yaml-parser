@@ -7,9 +7,11 @@ import {
   BmapFunctionBlock,
   BmapEnumOption
 } from './types';
-import { isArray, isObject } from 'lodash';
+import { cloneDeep, isArray, isObject } from 'lodash';
 
 const functionBlocks: BmapFunctionBlock[] = [];
+const updatedFunctionBlocks: BmapFunctionBlock[] = [];
+
 let yamlInputDirectory: string;
 let bmapOutputDirectory: string;
 let bmapIncludesSpecPath: string;
@@ -28,6 +30,26 @@ export function parseYaml(
   const includesSpec: any = parseBmapIncludesSpec();
 
   const bmapYamlData: any = safeLoad(fs.readFileSync(yamlInputDirectory + '/headers/BMAP.yaml', 'utf8'));
+
+  for (const functionBlock of bmapYamlData.Enums[0].Options) {
+    const updatedFunctionBlock: any = objectKeysToLowerCase(functionBlock);
+    updatedFunctionBlocks.push(updatedFunctionBlock);
+  }
+
+  debugger;
+
+  for (const functionBlock of updatedFunctionBlocks) {
+    if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.name)) {
+      functionBlock.Functions = [];
+      functionBlock.Enums = [];
+      getFunctions(functionBlock);
+      if (functionBlock.Functions.length > 0) {
+        functionBlocks.push(functionBlock);
+      }
+    }
+  }
+
+  debugger;
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
@@ -203,3 +225,13 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
     console.log(e);
   }
 }
+
+const objectKeysToLowerCase = (origObj: any) => {
+  return Object.keys(origObj).reduce((newObj: any, key: string) => {
+    const val = origObj[key];
+    const newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
+    const newKey: string = key.charAt(0).toLowerCase() + key.substring(1); 
+    newObj[newKey] = newVal;
+    return newObj;
+  }, {});
+};

@@ -1,6 +1,6 @@
 export interface BmapFunctionBlock {
   Value: number;
-  Name: string;
+  name: string;
   Category: string;
   Description: string;
   Mandatory: string;

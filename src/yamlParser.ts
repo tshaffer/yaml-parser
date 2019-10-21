@@ -46,7 +46,14 @@ export function parseYaml(
     }
   }
 
-  debugger;
+  for (const bsFunctionBlock of bsFunctionBlocks) {
+    bsFunctionBlock.functions = [];
+    bsFunctionBlock.enums = [];
+    getFunctions(bsFunctionBlock);
+    if (bsFunctionBlock.functions.length > 0) {
+      bsFunctionBlocks.push(bsFunctionBlock);
+    }
+  }
 
   for (const functionBlock of bmapYamlData.Enums[0].Options) {
     if (includesSpec.functionBlocks.hasOwnProperty(functionBlock.Name)) {
@@ -128,55 +135,60 @@ function parseBmapIncludesSpec(): any {
   return includesSpec;
 }
 
-function getFunctions(functionBlock: BmapFunctionBlock) {
+function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
+
+  debugger;
 
   console.log('\n');
-  console.log('Function block: ' + functionBlock.Name);
+  console.log('Function block: ' + bsFunctionBlock.name);
 
-  const path = yamlInputDirectory + '/' + functionBlock.Name + '/' + functionBlock.Name + '.yaml';
+  const path = yamlInputDirectory + '/' + bsFunctionBlock.name + '/' + bsFunctionBlock.name + '.yaml';
   console.log('path: ' + path);
   const functionYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
 
-  if (functionBlock.Name === 'Experimental') {
+  if (bsFunctionBlock.name === 'Experimental') {
     console.log('found it');
   }
+
+  debugger;
 
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
 
     // First entry in Enums array are the functions
-    const functionsYaml = functionYamlData.Enums[0].Options;
+    const functionsYaml: YamlBmapFunction[] = functionYamlData.Enums[0].Options;
     console.log('function count: ' + functionsYaml.length);
-    for (const bmapFunction of functionsYaml) {
-      bmapFunction.Operators = [];
-      functionBlock.Functions.push(bmapFunction as BsBmapFunction);
-      getOperators(functionBlock, bmapFunction);
+    for (const yamlBmapFunction of functionsYaml) {
+      yamlBmapFunction.Operators = [];
+      const bsBmapFunction: BsBmapFunction = objectKeysToLowerCase(yamlBmapFunction);
+      bsFunctionBlock.functions.push(bsBmapFunction);
+      // getOperators(bsFunctionBlock, bmapFunction);
     }
 
-    // Remaining entries in the Enums array are the actual enums
-    for (let i = 1; i < functionYamlData.Enums.length; i++) {
-      const enumDefinition = functionYamlData.Enums[i];
-      const enumName = enumDefinition.Name;
-      const enumDescription = enumDefinition.Description;
-      const enumOptions = enumDefinition.Options;
+    // // Remaining entries in the Enums array are the actual enums
+    // for (let i = 1; i < functionYamlData.Enums.length; i++) {
+    //   const enumDefinition = functionYamlData.Enums[i];
+    //   const enumName = enumDefinition.Name;
+    //   const enumDescription = enumDefinition.Description;
+    //   const enumOptions = enumDefinition.Options;
 
-      const bmapEnumOptions: BsBmapEnumOption[] = [];
+    //   const bmapEnumOptions: BsBmapEnumOption[] = [];
 
-      for (const enumOption of enumOptions) {
-        const bmapEnumOption: BmapEnumOption = {
-          Name: enumOption.Name,
-          Description: enumOption.Description,
-          Value: enumOption.Value,
-        };
-        // bmapEnumOptions.push(bmapEnumOption);
-      }
+    //   for (const enumOption of enumOptions) {
+    //     const bmapEnumOption: BmapEnumOption = {
+    //       Name: enumOption.Name,
+    //       Description: enumOption.Description,
+    //       Value: enumOption.Value,
+    //     };
+    //     // bmapEnumOptions.push(bmapEnumOption);
+    //   }
 
-      const bmapEnum: BsBmapEnum = {
-        name: enumName,
-        description: enumDescription,
-        options: bmapEnumOptions
-      };
-      functionBlock.Enums.push(bmapEnum);
-    }
+    //   const bmapEnum: BsBmapEnum = {
+    //     name: enumName,
+    //     description: enumDescription,
+    //     options: bmapEnumOptions
+    //   };
+    //   bsFunctionBlock.Enums.push(bmapEnum);
+    // }
   }
 }
 
@@ -237,7 +249,10 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
 const objectKeysToLowerCase = (origObj: any) => {
   return Object.keys(origObj).reduce((newObj: any, key: string) => {
     const val = origObj[key];
-    const newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
+    let newVal: any;
+    if (val !== null && val !== undefined) {
+      newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
+    }
     const newKey: string = key.charAt(0).toLowerCase() + key.substring(1);
     newObj[newKey] = newVal;
     return newObj;

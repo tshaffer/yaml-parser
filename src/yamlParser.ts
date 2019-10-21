@@ -14,6 +14,8 @@ import {
   BmapFunction,
   BmapFunctionBlock,
   BmapEnumOption,
+  YamlBmapOperator,
+  BsBmapOperator,
 } from './types';
 import { isArray, isObject } from 'lodash';
 
@@ -106,11 +108,11 @@ export function parseYaml(
   }
 
   const bmap: any = {};
-  bmap.Name = 'BMAP';
-  bmap.Version = '0.0.1';
-  bmap.Type = 'BMAP';
-  bmap.FunctionBlocks = functionBlocks;
-  bmap.Enums = topLevelBmapEnums;
+  bmap.name = 'BMAP';
+  bmap.version = '0.0.1';
+  bmap.type = 'BMAP';
+  bmap.functionBlocks = functionBlocks;
+  bmap.enums = topLevelBmapEnums;
   const bmapJson: string = JSON.stringify(bmap, null, 2);
   fs.writeFileSync(bmapOutputDirectory + '/bmap.json', bmapJson);
 }
@@ -137,8 +139,6 @@ function parseBmapIncludesSpec(): any {
 
 function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
 
-  debugger;
-
   console.log('\n');
   console.log('Function block: ' + bsFunctionBlock.name);
 
@@ -150,8 +150,6 @@ function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
     console.log('found it');
   }
 
-  debugger;
-
   if (isObject(functionYamlData) && isArray(functionYamlData.Enums)) {
 
     // First entry in Enums array are the functions
@@ -161,7 +159,7 @@ function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
       yamlBmapFunction.Operators = [];
       const bsBmapFunction: BsBmapFunction = objectKeysToLowerCase(yamlBmapFunction);
       bsFunctionBlock.functions.push(bsBmapFunction);
-      // getOperators(bsFunctionBlock, bmapFunction);
+      getOperators(bsFunctionBlock, bsBmapFunction);
     }
 
     // // Remaining entries in the Enums array are the actual enums
@@ -192,15 +190,15 @@ function getFunctions(bsFunctionBlock: BsBmapFunctionBlock) {
   }
 }
 
-function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFunction) {
+function getOperators(bsBmapFunctionBlock: BsBmapFunctionBlock, bsBmapFunction: BsBmapFunction) {
 
-  const path = yamlInputDirectory + '/' + bmapFunctionBlock.Name + '/' + bmapFunction.Name + '.yaml';
+  const path = yamlInputDirectory + '/' + bsBmapFunctionBlock.name + '/' + bsBmapFunction.name + '.yaml';
   console.log(path);
 
-  if (bmapFunction.Name == 'GestureRecognition') {
+  if (bsBmapFunction.name == 'GestureRecognition') {
     console.log('found');
   }
-  if (bmapFunction.Name === 'OneRecord') {
+  if (bsBmapFunction.name === 'OneRecord') {
     console.log('onerecord');
   }
 
@@ -208,13 +206,14 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
     console.log('safeLoad directory: ' + path);
     const operatorYamlData: any = safeLoad(fs.readFileSync(path, 'utf8'));
     if (isObject(operatorYamlData) && isObject(operatorYamlData.Messages)) {
-      const bmapOperators: any[] = operatorYamlData.Messages;
-      for (const bmapOperator of bmapOperators) {
-        bmapFunction.Operators.push(bmapOperator);
+      const bmapOperators: YamlBmapOperator[] = operatorYamlData.Messages;
+      for (const yamlBmapOperator of bmapOperators) {
+        const bsBmapOperator: BsBmapOperator = objectKeysToLowerCase(yamlBmapOperator);
+        bsBmapFunction.operators.push(bsBmapOperator);
       }
     }
 
-    bmapFunction.Enums = [];
+    bsBmapFunction.enums = [];
     if (isObject(operatorYamlData) && isArray(operatorYamlData.Enums)) {
       for (const enumDefinition of operatorYamlData.Enums) {
         const enumName = enumDefinition.Name;
@@ -238,7 +237,7 @@ function getOperators(bmapFunctionBlock: BmapFunctionBlock, bmapFunction: BmapFu
           Options: bmapEnumOptions
         };
 
-        bmapFunction.Enums.push(bmapEnum);
+        // bmapFunction.enums.push(bmapEnum);
       }
     }
   } catch (e) {
@@ -250,7 +249,10 @@ const objectKeysToLowerCase = (origObj: any) => {
   return Object.keys(origObj).reduce((newObj: any, key: string) => {
     const val = origObj[key];
     let newVal: any;
-    if (val !== null && val !== undefined) {
+    if (isArray(val) && val.length === 0) {
+      newVal = [];
+    // use isNil??
+    } else if (val !== null && val !== undefined) {
       newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
     }
     const newKey: string = key.charAt(0).toLowerCase() + key.substring(1);

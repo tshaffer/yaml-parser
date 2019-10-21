@@ -32,11 +32,11 @@ export interface BsBmapFunction {
 }
 
 export interface BsBmapOperator {
-  Description: string;
-  Function: string;
-  FunctionBlock: string;
-  Operator: string;
-  Fields?: any[];
+  description: string;
+  function: string;
+  functionBlock: string;
+  operator: string;
+  fields?: any[];
 }
 
 export interface BsBmapField {

@@ -33,8 +33,6 @@ export function parseYaml(
 
   // console.log('parseYaml invoked in typescript file');
 
-  debugger;
-
   yamlInputDirectory = yaml_input_directory;
   bmapOutputDirectory = bmap_output_directory;
   bmapIncludesSpecPath = bmap_includes_spec_path;
@@ -189,7 +187,6 @@ function getOperators(bsBmapFunctionBlock: BsBmapFunctionBlock, bsBmapFunction: 
 
     bsBmapFunction.enums = [];
     if (isObject(operatorYamlData) && isArray(operatorYamlData.Enums)) {
-      debugger;
       for (const enumDefinition of operatorYamlData.Enums) {
         const enumName = enumDefinition.Name;
         const enumDescription = enumDefinition.Description;
@@ -220,19 +217,23 @@ function getOperators(bsBmapFunctionBlock: BsBmapFunctionBlock, bsBmapFunction: 
   }
 }
 
-const objectKeysToLowerCase = (origObj: any) => {
-  return Object.keys(origObj).reduce((newObj: any, key: string) => {
-    const val = origObj[key];
+const objectKeysToLowerCase = (input: any): any => {
+  if (typeof input !== 'object') {
+    return input;
+  }
+  if (Array.isArray(input)) {
+    return input.map(objectKeysToLowerCase);
+  }
+  return Object.keys(input).reduce((newObj, key) => {
+    const val = input[key];
     let newVal: any;
-    if (isArray(val) && val.length === 0) {
-      newVal = [];
-    } else if (isNil(val)) {
+    if (isNil(val)) {
       newVal = null;
-    } else if (val !== null && val !== undefined) {
+    } else {
       newVal = (typeof val === 'object') ? objectKeysToLowerCase(val) : val;
     }
     const newKey: string = key.charAt(0).toLowerCase() + key.substring(1);
-    newObj[newKey] = newVal;
+    (newObj as any)[newKey] = newVal;
     return newObj;
   }, {});
 };
